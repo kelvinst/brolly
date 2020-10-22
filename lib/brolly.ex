@@ -1,6 +1,6 @@
-defmodule Poncho do
+defmodule Brolly do
   @moduledoc """
-  Documentation for Poncho.
+  Documentation for Brolly.
   """
 
   def dep_tree!(app, base_dir \\ ".") when is_atom(app) do
@@ -15,7 +15,7 @@ defmodule Poncho do
   defp filter_dep_tree([], acc), do: acc
 
   defp filter_dep_tree([dep | tail], acc) do
-    if poncho_dep?(dep) do
+    if brolly_dep?(dep) do
       dep = %{dep | deps: filter_dep_tree(dep.deps, [])}
       filter_dep_tree(tail, [dep | acc])
     else
@@ -96,11 +96,11 @@ defmodule Poncho do
     end)
   end
 
-  defp poncho_dep?(%Mix.Dep{app: name, scm: Mix.SCM.Path, opts: opts}) do
+  defp brolly_dep?(%Mix.Dep{app: name, scm: Mix.SCM.Path, opts: opts}) do
     opts[:path] == "../#{name}"
   end
 
-  defp poncho_dep?(%Mix.Dep{}), do: false
+  defp brolly_dep?(%Mix.Dep{}), do: false
 
   @default_config %{master: nil}
 
@@ -111,7 +111,7 @@ defmodule Poncho do
   end
 
   defp load_config_file(base_dir) do
-    with file = Path.join(base_dir, ".poncho_config.exs"),
+    with file = Path.join(base_dir, ".brolly_config.exs"),
          {:ok, content} <- File.read(file),
          {config, _} <- Code.eval_string(content) do
       config

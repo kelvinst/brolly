@@ -4,4 +4,4 @@
 
 ### Added
 
-- `mix poncho.deps.tree` task
+- `mix brolly.deps.tree` task

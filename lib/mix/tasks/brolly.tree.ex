@@ -1,7 +1,7 @@
-defmodule Mix.Tasks.Poncho.Tree do
+defmodule Mix.Tasks.Brolly.Tree do
   use Mix.Task
 
-  @shortdoc "Prints the dependency tree for the poncho project"
+  @shortdoc "Prints the dependency tree for the brolly project"
 
   @switches [base_dir: :string, reverse: :boolean, master: :string, format: :string]
   @aliases [b: :base_dir, r: :reverse, m: :master, f: :format]
@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Poncho.Tree do
     opts = Keyword.merge(@default_opts, opts)
 
     project = case args do
-      [] -> master(opts) || Poncho.config(opts[:base_dir]).master
+      [] -> master(opts) || Brolly.config(opts[:base_dir]).master
       [project_name] -> String.to_atom(project_name)
     end
 
@@ -35,14 +35,14 @@ defmodule Mix.Tasks.Poncho.Tree do
           |> List.flatten()
           |> Enum.join("\n")
 
-        File.write!("poncho_tree.dot", content)
+        File.write!("brolly_tree.dot", content)
 
         """
-        Generated "poncho_tree.dot" in the current directory.
+        Generated "brolly_tree.dot" in the current directory.
 
         To generate a PNG:
 
-            dot -Tpng poncho_tree.dot -o poncho_tree.png
+            dot -Tpng brolly_tree.dot -o brolly_tree.png
 
         For more options see http://www.graphviz.org/.
         """
@@ -53,8 +53,8 @@ defmodule Mix.Tasks.Poncho.Tree do
 
   defp dep_tree(app, opts), do: dep_tree(app, opts[:reverse], opts[:base_dir], master(opts))
 
-  defp dep_tree(app, true, base_dir, master), do: Poncho.reverse_dep_tree!(app, base_dir, master)
-  defp dep_tree(app, false, base_dir, _), do: Poncho.dep_tree!(app, base_dir)
+  defp dep_tree(app, true, base_dir, master), do: Brolly.reverse_dep_tree!(app, base_dir, master)
+  defp dep_tree(app, false, base_dir, _), do: Brolly.dep_tree!(app, base_dir)
 
   defp master(opts), do: String.to_atom(opts[:master])
 

@@ -1,14 +1,14 @@
-defmodule Poncho.MixProject do
+defmodule Brolly.MixProject do
   use Mix.Project
 
-  @github_url "https://github.com/kelvinst/poncho"
+  @github_url "https://github.com/kelvinst/brolly"
 
   def project do
     [
-      app: :poncho,
+      app: :brolly,
       version: "0.1.0",
       elixir: "~> 1.7",
-      description: "A toolkit to work with poncho projects",
+      description: "A toolkit to work with brolly projects",
       source_url: @github_url,
       homepage_url: @github_url,
       package: package(),
