@@ -1,12 +1,12 @@
 defmodule Mix.Tasks.Brolly.Tree do
   use Mix.Task
 
-  @shortdoc "Prints the dependency tree for the brolly project"
+  @shortdoc "Prints the dependency tree for the umbrella project"
 
-  @switches [base_dir: :string, reverse: :boolean, master: :string, format: :string]
-  @aliases [b: :base_dir, r: :reverse, m: :master, f: :format]
+  @switches [base_dir: :string, reverse: :boolean, format: :string]
+  @aliases [b: :base_dir, r: :reverse, f: :format]
 
-  @default_opts [base_dir: ".", reverse: false, master: "nil", format: "plain"]
+  @default_opts [base_dir: ".", reverse: false, format: "plain"]
   @plain_indent 4
 
   def run(args) do
@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Brolly.Tree do
     opts = Keyword.merge(@default_opts, opts)
 
     project = case args do
-      [] -> master(opts) || Brolly.config(opts[:base_dir]).master
+      [] -> nil
       [project_name] -> String.to_atom(project_name)
     end
 
@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Brolly.Tree do
         formatted_deps = dot_format_deps(dep_tree, nil, [])
 
         content =
-          [~s(digraph "dependency tree" {), formatted_deps, "}"]
+          [~s(digraph "dependency tree" {), "  rankdir=LR;", formatted_deps, "}"]
           |> List.flatten()
           |> Enum.join("\n")
 
@@ -51,12 +51,10 @@ defmodule Mix.Tasks.Brolly.Tree do
     end
   end
 
-  defp dep_tree(app, opts), do: dep_tree(app, opts[:reverse], opts[:base_dir], master(opts))
+  defp dep_tree(app, opts), do: dep_tree(app, opts[:reverse], opts[:base_dir])
 
-  defp dep_tree(app, true, base_dir, master), do: Brolly.reverse_dep_tree!(app, base_dir, master)
-  defp dep_tree(app, false, base_dir, _), do: Brolly.dep_tree!(app, base_dir)
-
-  defp master(opts), do: String.to_atom(opts[:master])
+  defp dep_tree(app, true, base_dir), do: Brolly.reverse_dep_tree!(app, base_dir)
+  defp dep_tree(app, false, base_dir), do: Brolly.dep_tree!(app, base_dir)
 
   defp plain_format_deps([], _, acc), do: acc
 
@@ -72,21 +70,21 @@ defmodule Mix.Tasks.Brolly.Tree do
     plain_format_deps(tail, depth, ["#{String.duplicate(" ", depth)}#{dep}" | acc])
   end
 
-  defp dot_format_deps([], _, acc), do: acc
+  defp dot_format_deps([], _, acc), do: acc |> Enum.sort() |> Enum.dedup() 
 
   defp dot_format_deps([{dep, deps} | tail], from, acc) do
     dep_list = [
       dot_line(dep, from) |
       dot_format_deps(deps, dep, [])
     ]
-    dot_format_deps(tail, nil, dep_list ++ acc)
+    dot_format_deps(tail, from, dep_list ++ acc)
   end
 
   defp dot_format_deps([dep | tail], from, acc) do
     dot_format_deps(tail, from, [dot_line(dep, from) | acc])
   end
 
-  defp dot_line(dep, nil), do: ~s(  "#{dep}")
-  defp dot_line(dep, from), do: ~s(  "#{from}" -> "#{dep}")
+  defp dot_line(dep, nil), do: ~s(  "#{dep}";)
+  defp dot_line(dep, from), do: ~s(  "#{from}" -> "#{dep}";)
 end
 

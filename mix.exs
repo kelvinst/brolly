@@ -8,7 +8,7 @@ defmodule Brolly.MixProject do
       app: :brolly,
       version: "0.1.0",
       elixir: "~> 1.7",
-      description: "A toolkit to work with brolly projects",
+      description: "A toolkit to work with umbrella projects",
       source_url: @github_url,
       homepage_url: @github_url,
       package: package(),
